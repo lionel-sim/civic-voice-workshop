@@ -4,6 +4,7 @@ import cors from "cors";
 import { createDb } from "./lib/db.js";
 
 const FEEDBACK_CATEGORIES = new Set(["Estate", "Transport", "Environment", "Other"]);
+const FEEDBACK_STATUSES = new Set(["New", "In review", "Closed"]);
 
 export async function createApp(options = {}) {
   const db = options.db ?? (await createDb());
@@ -34,6 +35,24 @@ export async function createApp(options = {}) {
     const feedback = [...db.data.feedback].sort(
       (first, second) => new Date(second.createdAt) - new Date(first.createdAt),
     );
+    return res.json({ feedback });
+  });
+
+  app.patch("/api/feedback/:id/status", async (req, res) => {
+    if (req.header("x-user-role") !== "admin") {
+      return res.status(403).json({ error: "Admin access required." });
+    }
+
+    const { status } = req.body ?? {};
+    if (!FEEDBACK_STATUSES.has(status)) {
+      return res.status(400).json({ error: "Please choose a valid feedback status." });
+    }
+
+    const feedback = db.data.feedback.find((item) => item.id === req.params.id);
+    if (!feedback) return res.status(404).json({ error: "Feedback not found." });
+
+    feedback.status = status;
+    await db.write();
     return res.json({ feedback });
   });
 

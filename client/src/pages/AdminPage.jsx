@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { getFeedback } from "../api";
+import { getFeedback, updateFeedbackStatus } from "../api";
 import { maskIdentifier } from "../lib/maskIdentifier";
+
+const FEEDBACK_STATUSES = ["New", "In review", "Closed"];
 
 export function AdminPage({ user }) {
   const [feedback, setFeedback] = useState([]);
   const [error, setError] = useState("");
+  const [updateError, setUpdateError] = useState("");
+  const [updatingId, setUpdatingId] = useState("");
   const [inboxState, setInboxState] = useState("loading");
   const summary = [
     { label: "Total", count: feedback.length },
@@ -37,6 +41,22 @@ export function AdminPage({ user }) {
     if (!normalizedQuery) return true;
     return [item.name, item.message].some((value) => value.toLocaleLowerCase().includes(normalizedQuery));
   });
+
+  async function handleStatusChange(feedbackId, status) {
+    setUpdateError("");
+    setUpdatingId(feedbackId);
+
+    try {
+      const response = await updateFeedbackStatus(user, feedbackId, status);
+      setFeedback((items) => items.map((item) => (
+        item.id === feedbackId ? response.feedback : item
+      )));
+    } catch (requestError) {
+      setUpdateError(requestError.message || "Unable to update feedback status.");
+    } finally {
+      setUpdatingId("");
+    }
+  }
 
   return (
     <main className="page-shell admin-shell">
@@ -82,6 +102,7 @@ export function AdminPage({ user }) {
                 placeholder="Search by name or keyword"
               />
             </label>
+            {updateError && <p className="error-message" role="alert">{updateError}</p>}
             {visibleFeedback.map((item) => (
               <article className="feedback-row" key={item.id}>
                 <div>
@@ -90,7 +111,17 @@ export function AdminPage({ user }) {
                   </div>
                   <p>{item.message}</p>
                 </div>
-                <span className="status-pill">{item.status}</span>
+                <label className="feedback-status-control">
+                  <span>Status</span>
+                  <select
+                    aria-label={`Status for feedback from ${item.name}`}
+                    disabled={updatingId === item.id}
+                    onChange={(event) => handleStatusChange(item.id, event.target.value)}
+                    value={item.status}
+                  >
+                    {FEEDBACK_STATUSES.map((status) => <option key={status}>{status}</option>)}
+                  </select>
+                </label>
               </article>
             ))}
             {visibleFeedback.length === 0 && (
