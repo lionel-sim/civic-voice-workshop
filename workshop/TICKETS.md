@@ -120,7 +120,7 @@ Add an API route and focused UI detail view with all stored fields and a back ac
 
 Done: direct selection works, and returning to the list keeps filters/search.
 
-### CV-015 — Export visible feedback to CSV · M
+### CV-015 [x] — Export visible feedback to CSV · M
 
 Add a server-generated CSV export for the currently filtered inbox and a UI download action.
 

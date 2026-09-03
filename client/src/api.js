@@ -31,3 +31,21 @@ export function updateFeedbackStatus(user, feedbackId, status) {
     body: JSON.stringify({ status }),
   });
 }
+
+export async function downloadFeedbackCsv(user, filters = {}) {
+  const searchParams = new URLSearchParams();
+  if (filters.search?.trim()) searchParams.set("search", filters.search.trim());
+  if (filters.category) searchParams.set("category", filters.category);
+  if (filters.status) searchParams.set("status", filters.status);
+  const query = searchParams.toString();
+  const response = await fetch(`${API_URL}/api/feedback/export.csv${query ? `?${query}` : ""}`, {
+    headers: { "x-user-role": user.role },
+  });
+
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.error ?? "Unable to export feedback.");
+  }
+
+  return response.blob();
+}

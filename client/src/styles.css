@@ -131,6 +131,8 @@ textarea { resize: vertical; line-height: 1.6; }
 .summary-card strong { color: var(--text); font-family: Fraunces, Georgia, serif; font-size: clamp(28px, 4vw, 42px); line-height: 1; }
 .list-header { display: flex; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--border-soft); }
 .list-header span { color: var(--muted); font-size: 14px; }
+.inbox-actions { display: flex; align-items: center; gap: 12px; }
+.inbox-actions .secondary-button { padding: 7px 10px; font-size: 13px; }
 .inbox-search { max-width: 440px; margin: 20px 0 4px; }
 .inbox-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto; align-items: end; gap: 14px; margin: 20px 0 4px; padding: 0; border: 0; }
 .inbox-filters legend { grid-column: 1 / -1; color: var(--text-secondary); font-size: 14px; font-weight: 700; }
@@ -182,6 +184,7 @@ textarea { resize: vertical; line-height: 1.6; }
   .summary-card { padding: 14px; }
   .feedback-list { padding: 16px; }
   .list-header { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .inbox-actions { align-items: flex-start; flex-direction: column; gap: 8px; }
   .inbox-search { max-width: none; margin-top: 16px; }
   .inbox-filters { display: flex; align-items: stretch; flex-direction: column; gap: 12px; margin-top: 16px; }
   .inbox-filters label, .inbox-filters .secondary-button { width: 100%; }

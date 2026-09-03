@@ -5,6 +5,7 @@ import { createDb } from "./lib/db.js";
 
 const FEEDBACK_CATEGORIES = new Set(["Estate", "Transport", "Environment", "Other"]);
 const FEEDBACK_STATUSES = new Set(["New", "In review", "Closed"]);
+const CSV_COLUMNS = ["Reference", "Name", "NRIC", "Category", "Status", "Feedback", "Submitted at"];
 
 export async function createApp(options = {}) {
   const db = options.db ?? (await createDb());
@@ -28,14 +29,35 @@ export async function createApp(options = {}) {
     return res.json({ token, user: { nric: user.nric, name: user.name, role: user.role } });
   });
 
+  app.get("/api/feedback/export.csv", (req, res) => {
+    if (req.header("x-user-role") !== "admin") {
+      return res.status(403).json({ error: "Admin access required." });
+    }
+
+    const feedback = filterFeedback(db.data.feedback, req.query);
+
+    const csv = [
+      CSV_COLUMNS,
+      ...feedback.map((item) => [
+        item.reference,
+        item.name,
+        item.nric,
+        item.category,
+        item.status,
+        item.message,
+        item.createdAt,
+      ]),
+    ].map((row) => row.map(escapeCsvValue).join(",")).join("\r\n");
+
+    res.attachment("feedback.csv");
+    return res.type("text/csv").send(csv);
+  });
+
   app.get("/api/feedback", (req, res) => {
     if (req.header("x-user-role") !== "admin") {
       return res.status(403).json({ error: "Admin access required." });
     }
-    const { category, status } = req.query;
-    const feedback = [...db.data.feedback]
-      .sort((first, second) => new Date(second.createdAt) - new Date(first.createdAt))
-      .filter((item) => (!category || item.category === category) && (!status || item.status === status));
+    const feedback = filterFeedback(db.data.feedback, req.query);
     return res.json({ feedback });
   });
 
@@ -91,4 +113,25 @@ function createSubmissionReference(feedbackItems) {
   } while (feedbackItems.some((item) => item.reference === reference));
 
   return reference;
+}
+
+function escapeCsvValue(value) {
+  const text = String(value ?? "");
+  const escaped = text.replaceAll('"', '""');
+  return /[",\r\n]/.test(text) ? `"${escaped}"` : escaped;
+}
+
+function filterFeedback(feedbackItems, filters = {}) {
+  const { category, status } = filters;
+  const searchQuery = typeof filters.search === "string" ? filters.search.trim().toLocaleLowerCase() : "";
+
+  return [...feedbackItems]
+    .sort((first, second) => new Date(second.createdAt) - new Date(first.createdAt))
+    .filter((item) => (
+      (!category || item.category === category)
+      && (!status || item.status === status)
+      && (!searchQuery || [item.name, item.message].some(
+        (value) => value.toLocaleLowerCase().includes(searchQuery),
+      ))
+    ));
 }
