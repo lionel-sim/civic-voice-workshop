@@ -40,7 +40,7 @@ Improve keyboard focus, labels, live error announcements, and success announceme
 
 Done: the main flow works with keyboard only and a screen reader can identify errors and success.
 
-### CV-011 — Add keyword search · S
+### CV-011 [x] — Add keyword search · S
 
 Search already-loaded feedback messages and citizen names in the admin UI without a server round trip.
 
