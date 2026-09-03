@@ -10,25 +10,25 @@ Scoring:
 
 ## S — front-end starter tickets
 
-### CV-001 — Keep the user signed in after refresh · S
+### CV-001 [x] — Keep the user signed in after refresh · S
 
 Persist a successful session locally and restore it on page load. Signing out must clear it.
 
 Done: sign in, refresh, and remain on the correct page; sign out, refresh, and return to login.
 
-### CV-002 — Validate NRIC-like input before login · S
+### CV-002 [x] — Validate NRIC-like input before login · S
 
 Reject empty or malformed workshop IDs in the browser before making the login request. Accept seeded IDs.
 
 Done: an inline message appears for malformed input and no network request is sent.
 
-### CV-003 — Add feedback character count and limit · S
+### CV-003 [x] — Add feedback character count and limit · S
 
 Show a live count and enforce a 500-character maximum in the form.
 
 Done: the counter updates while typing; more than 500 characters cannot be entered or submitted.
 
-### CV-007 — Add a “submit another” success state · S
+### CV-007 [x] — Add a “submit another” success state · S
 
 Replace the form after success with a confirmation panel and a button to start another submission.
 
@@ -40,7 +40,7 @@ Improve keyboard focus, labels, live error announcements, and success announceme
 
 Done: the main flow works with keyboard only and a screen reader can identify errors and success.
 
-### CV-011 — Add keyword search · S
+### CV-011 [x] — Add keyword search · S
 
 Search already-loaded feedback messages and citizen names in the admin UI without a server round trip.
 
