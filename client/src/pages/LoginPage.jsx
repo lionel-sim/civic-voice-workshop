@@ -1,19 +1,28 @@
 import { useState } from "react";
 import { login } from "../api";
+import { isWorkshopId } from "../lib/workshopId";
 
 export function LoginPage({ onLogin }) {
   const [role, setRole] = useState("citizen");
   const [nric, setNric] = useState("");
   const [password, setPassword] = useState("");
+  const [nricError, setNricError] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setBusy(true);
     setError("");
+    const workshopId = nric.trim().toUpperCase();
+    if (!isWorkshopId(workshopId)) {
+      setNricError("Enter an NRIC-like ID, for example S0000001A.");
+      return;
+    }
+
+    setNricError("");
+    setBusy(true);
     try {
-      const session = await login({ nric, password, role });
+      const session = await login({ nric: workshopId, password, role });
       onLogin(session);
     } catch (requestError) {
       setError(requestError.message);
@@ -44,8 +53,18 @@ export function LoginPage({ onLogin }) {
           </div>
           <form onSubmit={handleSubmit}>
             <label>NRIC
-              <input value={nric} onChange={(event) => setNric(event.target.value)} placeholder="e.g. S0000001A" />
+              <input
+                value={nric}
+                onChange={(event) => {
+                  setNric(event.target.value);
+                  setNricError("");
+                }}
+                placeholder="e.g. S0000001A"
+                aria-invalid={Boolean(nricError)}
+                aria-describedby={nricError ? "nric-error" : undefined}
+              />
             </label>
+            {nricError && <p className="error-message" id="nric-error">{nricError}</p>}
             <label>Password
               <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password" />
             </label>
