@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { submitFeedback } from "../api";
 
 export function CitizenPage({ user }) {
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const errorRef = useRef(null);
+  const successRef = useRef(null);
+
+  useEffect(() => {
+    if (error) errorRef.current?.focus();
+  }, [error]);
+
+  useEffect(() => {
+    if (submitted) successRef.current?.focus();
+  }, [submitted]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -26,16 +36,36 @@ export function CitizenPage({ user }) {
         <p>Tell us about an issue, an idea, or a positive experience in your community.</p>
       </div>
       <section className="form-card">
-        {submitted && <div className="success-banner">Thank you. Your feedback has been received.</div>}
+        {submitted && (
+          <div className="success-banner" role="status" aria-live="polite" tabIndex="-1" ref={successRef}>
+            Thank you. Your feedback has been received.
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
-          <label>Your feedback
-            <textarea rows="7" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Share your feedback here..." />
-          </label>
+          <label htmlFor="feedback-message">Your feedback</label>
+          <p id="feedback-guidance" className="field-guidance">
+            Please do not include sensitive personal information.
+          </p>
+          <textarea
+            id="feedback-message"
+            rows="7"
+            value={message}
+            onChange={(event) => {
+              setMessage(event.target.value);
+              setError("");
+            }}
+            placeholder="Share your feedback here..."
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? "feedback-guidance feedback-error" : "feedback-guidance"}
+          />
+          {error && (
+            <p id="feedback-error" className="error-message" role="alert" tabIndex="-1" ref={errorRef}>
+              {error}
+            </p>
+          )}
           <div className="form-footer">
-            <span className="muted">Please do not include sensitive personal information.</span>
             <button className="primary-button">Submit feedback</button>
           </div>
-          {error && <p className="error-message">{error}</p>}
         </form>
       </section>
     </main>

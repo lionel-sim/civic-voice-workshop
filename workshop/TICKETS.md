@@ -34,7 +34,7 @@ Replace the form after success with a confirmation panel and a button to start a
 
 Done: a second submission can be made without signing out.
 
-### CV-008 — Make the feedback form accessible · S
+### CV-008 [x] — Make the feedback form accessible · S
 
 Improve keyboard focus, labels, live error announcements, and success announcements.
 
