@@ -58,7 +58,7 @@ Mask identifiers wherever they are rendered outside the login form.
 
 Done: list and detail views show only a masked form such as `S••••••1A`.
 
-### CV-025 — Add a loading and retry state to the admin inbox · S
+### CV-025 [x] — Add a loading and retry state to the admin inbox · S
 
 The admin screen is blank while loading and unhelpful on failure.
 
@@ -70,7 +70,7 @@ Add a theme toggle that respects the OS preference initially and persists the us
 
 Done: all screens remain readable in both themes.
 
-### CV-028 — Make mobile admin usable · S
+### CV-028 [x] — Make mobile admin usable · S
 
 The inbox is cramped on small screens. Create a responsive layout without hiding important data.
 
