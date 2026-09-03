@@ -96,7 +96,7 @@ Return a short human-readable reference from the API and show it after submissio
 
 Done: success message contains a reference such as `CV-123456`; it is not the full UUID.
 
-### CV-009 — Sort newest feedback first · M
+### CV-009 [x] — Sort newest feedback first · M
 
 Make the API return newest-first feedback and keep the UI order reliable.
 
