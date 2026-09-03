@@ -58,7 +58,7 @@ Mask identifiers wherever they are rendered outside the login form.
 
 Done: list and detail views show only a masked form such as `S••••••1A`.
 
-### CV-025 — Add a loading and retry state to the admin inbox · S
+### CV-025 [x] — Add a loading and retry state to the admin inbox · S
 
 The admin screen is blank while loading and unhelpful on failure.
 
