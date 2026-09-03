@@ -5,6 +5,7 @@ import { createDb } from "./lib/db.js";
 
 const FEEDBACK_CATEGORIES = new Set(["Estate", "Transport", "Environment", "Other"]);
 const FEEDBACK_STATUSES = new Set(["New", "In review", "Closed"]);
+const FEEDBACKS_PER_PAGE = 10;
 
 export async function createApp(options = {}) {
   const db = options.db ?? (await createDb());
@@ -36,7 +37,18 @@ export async function createApp(options = {}) {
     const feedback = [...db.data.feedback]
       .sort((first, second) => new Date(second.createdAt) - new Date(first.createdAt))
       .filter((item) => (!category || item.category === category) && (!status || item.status === status));
-    return res.json({ feedback });
+    const totalItems = feedback.length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / FEEDBACKS_PER_PAGE));
+    const requestedPage = Number(req.query.page ?? 1);
+    const page = Number.isInteger(requestedPage) && requestedPage > 0
+      ? Math.min(requestedPage, totalPages)
+      : 1;
+    const start = (page - 1) * FEEDBACKS_PER_PAGE;
+
+    return res.json({
+      feedback: feedback.slice(start, start + FEEDBACKS_PER_PAGE),
+      pagination: { page, pageSize: FEEDBACKS_PER_PAGE, totalItems, totalPages },
+    });
   });
 
   app.patch("/api/feedback/:id/status", async (req, res) => {

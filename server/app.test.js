@@ -67,6 +67,36 @@ describe("CivicVoice baseline API", () => {
     expect(combined.body.feedback).toEqual([expect.objectContaining({ id: "1", category: "Estate", status: "New" })]);
   });
 
+  it("paginates filtered feedback in groups of ten and keeps the requested page valid", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
+    const db = await createDb(path.join(directory, "db.json"));
+    db.data.feedback = Array.from({ length: 12 }, (_, index) => ({
+      id: `estate-${index + 1}`,
+      nric: "S0000001A",
+      name: "Aisha Rahman",
+      message: `Estate issue ${index + 1}`,
+      category: "Estate",
+      status: "New",
+      createdAt: `2026-08-${String(index + 1).padStart(2, "0")}T09:00:00.000Z`,
+    }));
+    const app = await createApp({ db });
+
+    const firstPage = await request(app)
+      .get("/api/feedback")
+      .query({ category: "Estate", page: 1 })
+      .set("x-user-role", "admin");
+    const finalPage = await request(app)
+      .get("/api/feedback")
+      .query({ category: "Estate", page: 99 })
+      .set("x-user-role", "admin");
+
+    expect(firstPage.body.feedback).toHaveLength(10);
+    expect(firstPage.body.feedback[0].id).toBe("estate-12");
+    expect(firstPage.body.pagination).toEqual({ page: 1, pageSize: 10, totalItems: 12, totalPages: 2 });
+    expect(finalPage.body.feedback.map((item) => item.id)).toEqual(["estate-2", "estate-1"]);
+    expect(finalPage.body.pagination.page).toBe(2);
+  });
+
   it("rejects feedback with an invalid category", async () => {
     const app = await testApp();
     const response = await request(app).post("/api/feedback").send({

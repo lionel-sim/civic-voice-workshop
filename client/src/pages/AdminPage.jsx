@@ -3,9 +3,12 @@ import { getFeedback, updateFeedbackStatus } from "../api";
 import { maskIdentifier } from "../lib/maskIdentifier";
 
 const FEEDBACK_STATUSES = ["New", "In review", "Closed"];
+const INITIAL_PAGINATION = { page: 1, pageSize: 10, totalItems: 0, totalPages: 1 };
 
 export function AdminPage({ user }) {
   const [feedback, setFeedback] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(INITIAL_PAGINATION);
   const [error, setError] = useState("");
   const [updateError, setUpdateError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
@@ -25,14 +28,16 @@ export function AdminPage({ user }) {
     setError("");
 
     try {
-      const response = await getFeedback(user, { category: categoryFilter, status: statusFilter });
+      const response = await getFeedback(user, { category: categoryFilter, status: statusFilter, page });
       setFeedback(response.feedback);
+      setPagination(response.pagination);
+      if (response.pagination.page !== page) setPage(response.pagination.page);
       setInboxState("ready");
     } catch (requestError) {
       setError(requestError.message || "Unable to load feedback.");
       setInboxState("error");
     }
-  }, [categoryFilter, statusFilter, user]);
+  }, [categoryFilter, page, statusFilter, user]);
 
   useEffect(() => {
     loadFeedback();
@@ -49,6 +54,17 @@ export function AdminPage({ user }) {
     setCategoryFilter("");
     setStatusFilter("");
     setSearchQuery("");
+    setPage(1);
+  }
+
+  function handleCategoryFilterChange(value) {
+    setCategoryFilter(value);
+    setPage(1);
+  }
+
+  function handleStatusFilterChange(value) {
+    setStatusFilter(value);
+    setPage(1);
   }
 
   async function handleStatusChange(feedbackId, status) {
@@ -100,7 +116,7 @@ export function AdminPage({ user }) {
         )}
         {inboxState === "ready" && (
           <>
-            <div className="list-header"><strong>Latest feedback</strong><span>{visibleFeedback.length} of {feedback.length} items</span></div>
+            <div className="list-header"><strong>Latest feedback</strong><span>{visibleFeedback.length} of {pagination.totalItems} items</span></div>
             <label className="inbox-search" htmlFor="feedback-search">
               Search feedback
               <input
@@ -118,7 +134,7 @@ export function AdminPage({ user }) {
                 <select
                   id="feedback-category-filter"
                   value={categoryFilter}
-                  onChange={(event) => setCategoryFilter(event.target.value)}
+                  onChange={(event) => handleCategoryFilterChange(event.target.value)}
                 >
                   <option value="">All categories</option>
                   <option value="Estate">Estate</option>
@@ -132,7 +148,7 @@ export function AdminPage({ user }) {
                 <select
                   id="feedback-status-filter"
                   value={statusFilter}
-                  onChange={(event) => setStatusFilter(event.target.value)}
+                  onChange={(event) => handleStatusFilterChange(event.target.value)}
                 >
                   <option value="">All statuses</option>
                   <option value="New">New</option>
@@ -172,6 +188,25 @@ export function AdminPage({ user }) {
                 <p>{hasActiveFilters ? "Try changing or clearing your filters." : "No feedback has been received yet."}</p>
               </div>
             )}
+            <nav className="pagination-controls" aria-label="Feedback pages">
+              <button
+                className="secondary-button"
+                type="button"
+                disabled={pagination.page === 1}
+                onClick={() => setPage((currentPage) => currentPage - 1)}
+              >
+                Previous
+              </button>
+              <span aria-live="polite">Page {pagination.page} of {pagination.totalPages}</span>
+              <button
+                className="secondary-button"
+                type="button"
+                disabled={pagination.page === pagination.totalPages}
+                onClick={() => setPage((currentPage) => currentPage + 1)}
+              >
+                Next
+              </button>
+            </nav>
           </>
         )}
       </section>

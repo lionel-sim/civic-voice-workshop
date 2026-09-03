@@ -126,7 +126,7 @@ Add a server-generated CSV export for the currently filtered inbox and a UI down
 
 Done: CSV opens cleanly in a spreadsheet app and safely quotes commas/newlines.
 
-### CV-016 — Add pagination · M
+### CV-016 [x] — Add pagination · M
 
 Add paginated API results and previous/next controls with 10 items per page.
 

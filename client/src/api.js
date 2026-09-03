@@ -20,6 +20,7 @@ export function getFeedback(user, filters = {}) {
   const searchParams = new URLSearchParams();
   if (filters.category) searchParams.set("category", filters.category);
   if (filters.status) searchParams.set("status", filters.status);
+  if (filters.page) searchParams.set("page", filters.page);
   const query = searchParams.toString();
 
   return api(`/api/feedback${query ? `?${query}` : ""}`, { headers: { "x-user-role": user.role } });
