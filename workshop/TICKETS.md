@@ -10,7 +10,7 @@ Scoring:
 
 ## S — front-end starter tickets
 
-### CV-001 — Keep the user signed in after refresh · S
+### CV-001 [x] — Keep the user signed in after refresh · S
 
 Persist a successful session locally and restore it on page load. Signing out must clear it.
 
@@ -28,7 +28,7 @@ Show a live count and enforce a 500-character maximum in the form.
 
 Done: the counter updates while typing; more than 500 characters cannot be entered or submitted.
 
-### CV-007 — Add a “submit another” success state · S
+### CV-007 [x] — Add a “submit another” success state · S
 
 Replace the form after success with a confirmation panel and a button to start another submission.
 
@@ -52,7 +52,7 @@ Show client-side counts for total, new, in-review, and closed feedback.
 
 Done: counts reflect the currently loaded inbox and remain readable on mobile.
 
-### CV-021 — Avoid exposing NRIC-like IDs in the admin list · S
+### CV-021 [x] — Avoid exposing NRIC-like IDs in the admin list · S
 
 Mask identifiers wherever they are rendered outside the login form.
 
