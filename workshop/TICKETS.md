@@ -46,7 +46,7 @@ Search already-loaded feedback messages and citizen names in the admin UI withou
 
 Done: search is case-insensitive and shows a useful empty state.
 
-### CV-013 — Add inbox summary cards · S
+### CV-013 [x] — Add inbox summary cards · S
 
 Show client-side counts for total, new, in-review, and closed feedback.
 

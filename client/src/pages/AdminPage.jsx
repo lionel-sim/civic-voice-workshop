@@ -4,6 +4,12 @@ import { getFeedback } from "../api";
 export function AdminPage({ user }) {
   const [feedback, setFeedback] = useState([]);
   const [error, setError] = useState("");
+  const summary = [
+    { label: "Total", count: feedback.length },
+    { label: "New", count: feedback.filter((item) => item.status === "New").length },
+    { label: "In review", count: feedback.filter((item) => item.status === "In review").length },
+    { label: "Closed", count: feedback.filter((item) => item.status === "Closed").length },
+  ];
 
   useEffect(() => {
     getFeedback(user).then((response) => setFeedback(response.feedback)).catch((requestError) => setError(requestError.message));
@@ -17,6 +23,14 @@ export function AdminPage({ user }) {
         <p>A simple view of feedback received from members of the public.</p>
       </div>
       {error && <p className="error-message">{error}</p>}
+      <section className="inbox-summary" aria-label="Current inbox summary">
+        {summary.map(({ label, count }) => (
+          <div className="summary-card" key={label}>
+            <span>{label}</span>
+            <strong>{count}</strong>
+          </div>
+        ))}
+      </section>
       <section className="feedback-list">
         <div className="list-header"><strong>Latest feedback</strong><span>{feedback.length} items</span></div>
         {feedback.map((item) => (
