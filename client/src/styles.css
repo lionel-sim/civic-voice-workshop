@@ -36,6 +36,8 @@ textarea { resize: vertical; line-height: 1.6; }
 .primary-button:disabled { opacity: .65; cursor: wait; }
 .login-card .primary-button { width: 100%; margin-top: 8px; }
 .error-message { color: #b2252a; font-size: 14px; }
+.secondary-button { border: 1px solid #b2252a; border-radius: 8px; background: white; color: #a91f25; padding: 11px 16px; font-weight: 700; }
+.secondary-button:hover { background: #fff4f3; }
 .field-guidance { color: #69747b; font-size: 13px; margin: -7px 0 15px; }
 .demo-help { margin-top: 24px; color: #69747b; font-size: 13px; }
 .demo-help summary { cursor: pointer; font-weight: 600; }
@@ -60,11 +62,20 @@ textarea { resize: vertical; line-height: 1.6; }
 .list-header span { color: #69747b; font-size: 14px; }
 .inbox-search { max-width: 440px; margin: 20px 0 4px; }
 .empty-state { margin: 20px 0 0; color: #69747b; line-height: 1.55; }
+.inbox-state { display: grid; justify-items: start; gap: 10px; padding: 30px; border: 1px solid #e2dfd7; border-radius: 10px; text-align: left; }
+.inbox-state h2 { margin: 0; font-size: 26px; }
+.inbox-state p { margin: 0; color: #556269; line-height: 1.55; }
+.inbox-state-loading { min-height: 210px; place-content: center; background: #f3f7fb; border-color: #c9dce9; }
+.inbox-state-loading h2::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-right: 10px; border: 3px solid #1b6ea8; border-right-color: transparent; border-radius: 50%; vertical-align: -1px; animation: spin .8s linear infinite; }
+.inbox-state-error { background: #fff4f3; border-color: #efc4c0; }
+.inbox-state-error h2, .inbox-state-error p { color: #8f1b20; }
+.inbox-state-empty { margin-top: 20px; background: #faf9f6; border-style: dashed; }
 .feedback-row { display: flex; justify-content: space-between; gap: 24px; padding: 20px 0; border-bottom: 1px solid #eceae4; }
 .feedback-row:last-child { border-bottom: 0; padding-bottom: 0; }
 .feedback-row p { margin: 8px 0 0; line-height: 1.55; }
 .feedback-meta { color: #69747b; font-size: 13px; }
 .status-pill { align-self: flex-start; white-space: nowrap; background: #fff1df; color: #9a5b00; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 700; }
+@keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 760px) {
   .split-layout { grid-template-columns: 1fr; }
   .intro-panel { min-height: 360px; padding: 58px 8vw; }
