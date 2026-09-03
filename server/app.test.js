@@ -54,4 +54,21 @@ describe("CivicVoice baseline API", () => {
     const response = await request(app).get("/api/feedback");
     expect(response.status).toBe(403);
   });
+
+  it("returns feedback newest first when stored data is out of order", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
+    const db = await createDb(path.join(directory, "db.json"));
+    db.data.feedback = [
+      { id: "old", createdAt: "2026-08-01T09:00:00.000Z" },
+      { id: "new", createdAt: "2026-08-03T09:00:00.000Z" },
+      { id: "middle", createdAt: "2026-08-02T09:00:00.000Z" },
+    ];
+    await db.write();
+    const app = await createApp({ db });
+
+    const response = await request(app).get("/api/feedback").set("x-user-role", "admin");
+
+    expect(response.status).toBe(200);
+    expect(response.body.feedback.map((item) => item.id)).toEqual(["new", "middle", "old"]);
+  });
 });
