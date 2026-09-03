@@ -108,7 +108,7 @@ Add API query parameters and UI controls for category plus `New`, `In review`, a
 
 Done: filters work together, refresh correctly, and a clear action restores all items.
 
-### CV-012 — Let admins update status · M
+### CV-012 [x] — Let admins update status · M
 
 Add an API endpoint and UI control to move an item among `New`, `In review`, and `Closed`.
 

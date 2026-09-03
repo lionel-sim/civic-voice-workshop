@@ -68,6 +68,39 @@ describe("CivicVoice baseline API", () => {
     expect(response.status).toBe(403);
   });
 
+  it("lets an admin update a feedback status and persists the change", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
+    const file = path.join(directory, "db.json");
+    const db = await createDb(file);
+    const app = await createApp({ db });
+
+    const response = await request(app)
+      .patch("/api/feedback/fb-seed-1/status")
+      .set("x-user-role", "admin")
+      .send({ status: "In review" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.feedback.status).toBe("In review");
+
+    const reloadedDb = await createDb(file);
+    expect(reloadedDb.data.feedback.find((item) => item.id === "fb-seed-1").status).toBe("In review");
+  });
+
+  it("rejects non-admin and invalid status updates", async () => {
+    const app = await testApp();
+
+    const forbidden = await request(app)
+      .patch("/api/feedback/fb-seed-1/status")
+      .send({ status: "Closed" });
+    expect(forbidden.status).toBe(403);
+
+    const invalid = await request(app)
+      .patch("/api/feedback/fb-seed-1/status")
+      .set("x-user-role", "admin")
+      .send({ status: "Archived" });
+    expect(invalid.status).toBe(400);
+  });
+
   it("returns feedback newest first when stored data is out of order", async () => {
     const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
     const db = await createDb(path.join(directory, "db.json"));
