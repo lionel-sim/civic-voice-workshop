@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getFeedback, updateFeedbackStatus } from "../api";
+import { downloadFeedbackCsv, getFeedback, updateFeedbackStatus } from "../api";
 import { maskIdentifier } from "../lib/maskIdentifier";
 
 const FEEDBACK_STATUSES = ["New", "In review", "Closed"];
@@ -9,6 +9,8 @@ export function AdminPage({ user }) {
   const [error, setError] = useState("");
   const [updateError, setUpdateError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
+  const [exportError, setExportError] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
   const [inboxState, setInboxState] = useState("loading");
   const summary = [
     { label: "Total", count: feedback.length },
@@ -58,6 +60,27 @@ export function AdminPage({ user }) {
     }
   }
 
+  async function handleExport() {
+    setExportError("");
+    setIsExporting(true);
+
+    try {
+      const csv = await downloadFeedbackCsv(user, { search: searchQuery });
+      const downloadUrl = URL.createObjectURL(csv);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = "feedback.csv";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+    } catch (requestError) {
+      setExportError(requestError.message || "Unable to export feedback.");
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   return (
     <main className="page-shell admin-shell">
       <div className="page-heading">
@@ -91,7 +114,15 @@ export function AdminPage({ user }) {
         )}
         {inboxState === "ready" && (
           <>
-            <div className="list-header"><strong>Latest feedback</strong><span>{visibleFeedback.length} of {feedback.length} items</span></div>
+            <div className="list-header">
+              <strong>Latest feedback</strong>
+              <div className="inbox-actions">
+                <span>{visibleFeedback.length} of {feedback.length} items</span>
+                <button className="secondary-button" type="button" onClick={handleExport} disabled={isExporting}>
+                  {isExporting ? "Preparing CSV…" : "Download CSV"}
+                </button>
+              </div>
+            </div>
             <label className="inbox-search" htmlFor="feedback-search">
               Search feedback
               <input
@@ -102,6 +133,7 @@ export function AdminPage({ user }) {
                 placeholder="Search by name or keyword"
               />
             </label>
+            {exportError && <p className="error-message" role="alert">{exportError}</p>}
             {updateError && <p className="error-message" role="alert">{updateError}</p>}
             {visibleFeedback.map((item) => (
               <article className="feedback-row" key={item.id}>

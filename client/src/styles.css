@@ -131,6 +131,8 @@ textarea { resize: vertical; line-height: 1.6; }
 .summary-card strong { color: var(--text); font-family: Fraunces, Georgia, serif; font-size: clamp(28px, 4vw, 42px); line-height: 1; }
 .list-header { display: flex; justify-content: space-between; padding-bottom: 18px; border-bottom: 1px solid var(--border-soft); }
 .list-header span { color: var(--muted); font-size: 14px; }
+.inbox-actions { display: flex; align-items: center; gap: 12px; }
+.inbox-actions .secondary-button { padding: 7px 10px; font-size: 13px; }
 .inbox-search { max-width: 440px; margin: 20px 0 4px; }
 .empty-state { margin: 20px 0 0; color: var(--muted); line-height: 1.55; }
 .inbox-state { display: grid; justify-items: start; gap: 10px; padding: 30px; border: 1px solid var(--border); border-radius: 10px; text-align: left; }
@@ -177,6 +179,7 @@ textarea { resize: vertical; line-height: 1.6; }
   .summary-card { padding: 14px; }
   .feedback-list { padding: 16px; }
   .list-header { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .inbox-actions { align-items: flex-start; flex-direction: column; gap: 8px; }
   .inbox-search { max-width: none; margin-top: 16px; }
   .feedback-row { align-items: flex-start; flex-direction: column; gap: 12px; padding: 16px 0; }
   .feedback-row > div { min-width: 0; }

@@ -71,6 +71,35 @@ describe("CivicVoice baseline API", () => {
     expect(response.status).toBe(403);
   });
 
+  it("exports the visible feedback as safely quoted CSV", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
+    const db = await createDb(path.join(directory, "db.json"));
+    db.data.feedback.push({
+      id: "fb-csv", reference: "CV-123456", nric: "S0000003C", name: "Sam, Lee",
+      message: "The lights are \"too bright\".\nPlease dim them.", category: "Environment",
+      status: "In review", createdAt: "2026-09-01T09:14:00.000Z",
+    });
+    await db.write();
+    const app = await createApp({ db });
+
+    const response = await request(app)
+      .get("/api/feedback/export.csv?search=sam")
+      .set("x-user-role", "admin");
+
+    expect(response.status).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/csv");
+    expect(response.headers["content-disposition"]).toContain("feedback.csv");
+    expect(response.text).toContain("Reference,Name,NRIC,Category,Status,Feedback,Submitted at");
+    expect(response.text).toContain('CV-123456,"Sam, Lee",S0000003C,Environment,In review,"The lights are ""too bright"".\nPlease dim them.",2026-09-01T09:14:00.000Z');
+    expect(response.text).not.toContain("fb-seed-1");
+  });
+
+  it("blocks CSV exports without the admin role header", async () => {
+    const app = await testApp();
+    const response = await request(app).get("/api/feedback/export.csv");
+    expect(response.status).toBe(403);
+  });
+
   it("lets an admin update a feedback status and persists the change", async () => {
     const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
     const file = path.join(directory, "db.json");
