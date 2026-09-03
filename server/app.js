@@ -32,9 +32,10 @@ export async function createApp(options = {}) {
     if (req.header("x-user-role") !== "admin") {
       return res.status(403).json({ error: "Admin access required." });
     }
-    const feedback = [...db.data.feedback].sort(
-      (first, second) => new Date(second.createdAt) - new Date(first.createdAt),
-    );
+    const { category, status } = req.query;
+    const feedback = [...db.data.feedback]
+      .sort((first, second) => new Date(second.createdAt) - new Date(first.createdAt))
+      .filter((item) => (!category || item.category === category) && (!status || item.status === status));
     return res.json({ feedback });
   });
 

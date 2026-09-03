@@ -17,20 +17,22 @@ export function AdminPage({ user }) {
     { label: "Closed", count: feedback.filter((item) => item.status === "Closed").length },
   ];
   const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   const loadFeedback = useCallback(async () => {
     setInboxState("loading");
     setError("");
 
     try {
-      const response = await getFeedback(user);
+      const response = await getFeedback(user, { category: categoryFilter, status: statusFilter });
       setFeedback(response.feedback);
       setInboxState("ready");
     } catch (requestError) {
       setError(requestError.message || "Unable to load feedback.");
       setInboxState("error");
     }
-  }, [user]);
+  }, [categoryFilter, statusFilter, user]);
 
   useEffect(() => {
     loadFeedback();
@@ -41,6 +43,13 @@ export function AdminPage({ user }) {
     if (!normalizedQuery) return true;
     return [item.name, item.message].some((value) => value.toLocaleLowerCase().includes(normalizedQuery));
   });
+  const hasActiveFilters = Boolean(categoryFilter || statusFilter || normalizedQuery);
+
+  function clearFilters() {
+    setCategoryFilter("");
+    setStatusFilter("");
+    setSearchQuery("");
+  }
 
   async function handleStatusChange(feedbackId, status) {
     setUpdateError("");
@@ -102,6 +111,39 @@ export function AdminPage({ user }) {
                 placeholder="Search by name or keyword"
               />
             </label>
+            <fieldset className="inbox-filters">
+              <legend>Filter feedback</legend>
+              <label htmlFor="feedback-category-filter">
+                Category
+                <select
+                  id="feedback-category-filter"
+                  value={categoryFilter}
+                  onChange={(event) => setCategoryFilter(event.target.value)}
+                >
+                  <option value="">All categories</option>
+                  <option value="Estate">Estate</option>
+                  <option value="Transport">Transport</option>
+                  <option value="Environment">Environment</option>
+                  <option value="Other">Other</option>
+                </select>
+              </label>
+              <label htmlFor="feedback-status-filter">
+                Status
+                <select
+                  id="feedback-status-filter"
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
+                  <option value="">All statuses</option>
+                  <option value="New">New</option>
+                  <option value="In review">In review</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </label>
+              <button className="secondary-button" type="button" onClick={clearFilters} disabled={!hasActiveFilters}>
+                Clear filters
+              </button>
+            </fieldset>
             {updateError && <p className="error-message" role="alert">{updateError}</p>}
             {visibleFeedback.map((item) => (
               <article className="feedback-row" key={item.id}>
@@ -126,8 +168,8 @@ export function AdminPage({ user }) {
             ))}
             {visibleFeedback.length === 0 && (
               <div className="inbox-state inbox-state-empty">
-                <h2>{normalizedQuery ? "No matching feedback" : "Your inbox is empty"}</h2>
-                <p>{normalizedQuery ? "Try a different name or keyword." : "No feedback has been received yet."}</p>
+                <h2>{hasActiveFilters ? "No matching feedback" : "Your inbox is empty"}</h2>
+                <p>{hasActiveFilters ? "Try changing or clearing your filters." : "No feedback has been received yet."}</p>
               </div>
             )}
           </>

@@ -102,7 +102,7 @@ Make the API return newest-first feedback and keep the UI order reliable.
 
 Done: an automated test covers out-of-order stored data and the UI shows newest first.
 
-### CV-010 — Add category and status filters · M
+### CV-010 [x] — Add category and status filters · M
 
 Add API query parameters and UI controls for category plus `New`, `In review`, and `Closed`.
 
