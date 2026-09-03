@@ -31,7 +31,13 @@ export async function createApp(options = {}) {
     if (req.header("x-user-role") !== "admin") {
       return res.status(403).json({ error: "Admin access required." });
     }
-    return res.json({ feedback: db.data.feedback });
+
+    const { category, status } = req.query;
+    const feedback = db.data.feedback.filter((item) => (
+      (!category || item.category === category) && (!status || item.status === status)
+    ));
+
+    return res.json({ feedback });
   });
 
   app.post("/api/feedback", async (req, res) => {

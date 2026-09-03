@@ -41,6 +41,29 @@ describe("CivicVoice baseline API", () => {
     expect(inbox.body.feedback[0].category).toBe("Estate");
   });
 
+  it("filters the admin inbox by category and status together", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
+    const db = await createDb(path.join(directory, "db.json"));
+    db.data.feedback = [
+      { id: "1", nric: "S0000001A", name: "Aisha Rahman", message: "Estate issue", category: "Estate", status: "New", createdAt: "2026-08-29T09:14:00.000Z" },
+      { id: "2", nric: "S0000001A", name: "Aisha Rahman", message: "Review issue", category: "Estate", status: "In review", createdAt: "2026-08-29T09:14:00.000Z" },
+      { id: "3", nric: "S0000001A", name: "Aisha Rahman", message: "Transport issue", category: "Transport", status: "New", createdAt: "2026-08-29T09:14:00.000Z" },
+      { id: "4", nric: "S0000001A", name: "Aisha Rahman", message: "Closed issue", category: "Environment", status: "Closed", createdAt: "2026-08-29T09:14:00.000Z" },
+    ];
+    const app = await createApp({ db });
+
+    const byCategory = await request(app).get("/api/feedback").query({ category: "Estate" }).set("x-user-role", "admin");
+    const byStatus = await request(app).get("/api/feedback").query({ status: "New" }).set("x-user-role", "admin");
+    const combined = await request(app)
+      .get("/api/feedback")
+      .query({ category: "Estate", status: "New" })
+      .set("x-user-role", "admin");
+
+    expect(byCategory.body.feedback).toHaveLength(2);
+    expect(byStatus.body.feedback).toHaveLength(2);
+    expect(combined.body.feedback).toEqual([expect.objectContaining({ id: "1", category: "Estate", status: "New" })]);
+  });
+
   it("rejects feedback with an invalid category", async () => {
     const app = await testApp();
     const response = await request(app).post("/api/feedback").send({
