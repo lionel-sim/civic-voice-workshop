@@ -70,7 +70,7 @@ Add a theme toggle that respects the OS preference initially and persists the us
 
 Done: all screens remain readable in both themes.
 
-### CV-028 — Make mobile admin usable · S
+### CV-028 [x] — Make mobile admin usable · S
 
 The inbox is cramped on small screens. Create a responsive layout without hiding important data.
 

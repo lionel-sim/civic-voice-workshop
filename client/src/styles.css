@@ -77,3 +77,19 @@ textarea { resize: vertical; line-height: 1.6; }
   .inbox-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .summary-card { padding: 16px; }
 }
+
+@media (max-width: 520px) {
+  .site-header { padding: 0 16px; }
+  .header-actions { gap: 12px; }
+  .page-shell { padding: 44px 16px; }
+  .page-heading { margin-bottom: 28px; }
+  .inbox-summary { gap: 10px; margin-bottom: 16px; }
+  .summary-card { padding: 14px; }
+  .feedback-list { padding: 16px; }
+  .list-header { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .inbox-search { max-width: none; margin-top: 16px; }
+  .feedback-row { align-items: flex-start; flex-direction: column; gap: 12px; padding: 16px 0; }
+  .feedback-row > div { min-width: 0; }
+  .feedback-meta, .feedback-row p { overflow-wrap: anywhere; }
+  .status-pill { align-self: flex-start; }
+}
