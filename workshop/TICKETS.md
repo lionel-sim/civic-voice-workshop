@@ -16,7 +16,7 @@ Persist a successful session locally and restore it on page load. Signing out mu
 
 Done: sign in, refresh, and remain on the correct page; sign out, refresh, and return to login.
 
-### CV-002 — Validate NRIC-like input before login · S
+### CV-002 [x] — Validate NRIC-like input before login · S
 
 Reject empty or malformed workshop IDs in the browser before making the login request. Accept seeded IDs.
 
