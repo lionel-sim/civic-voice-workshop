@@ -26,6 +26,12 @@ export function CitizenPage({ user }) {
     }
   }
 
+  function handleSubmitAnother() {
+    setSubmitted(false);
+    setMessage("");
+    setError("");
+  }
+
   return (
     <main className="page-shell">
       <div className="page-heading">
@@ -34,26 +40,35 @@ export function CitizenPage({ user }) {
         <p>Tell us about an issue, an idea, or a positive experience in your community.</p>
       </div>
       <section className="form-card">
-        {submitted && <div className="success-banner">Thank you. Your feedback has been received.</div>}
-        <form onSubmit={handleSubmit}>
-          <label>Your feedback
-            <textarea
-              rows="7"
-              value={message}
-              maxLength={MAX_FEEDBACK_LENGTH}
-              onChange={(event) => setMessage(event.target.value.slice(0, MAX_FEEDBACK_LENGTH))}
-              placeholder="Share your feedback here..."
-            />
-          </label>
-          <div className="form-footer">
-            <div>
-              <div className="character-count">{message.length} / {MAX_FEEDBACK_LENGTH} characters</div>
-              <span className="muted">Please do not include sensitive personal information.</span>
-            </div>
-            <button className="primary-button">Submit feedback</button>
+        {submitted ? (
+          <div className="success-panel">
+            <div className="eyebrow">Feedback submitted</div>
+            <h2>Thank you for sharing.</h2>
+            <p>Your feedback has been received.</p>
+            <button className="primary-button" onClick={handleSubmitAnother}>Submit another response</button>
           </div>
-          {error && <p className="error-message">{error}</p>}
-        </form>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <label>
+              Your feedback
+              <textarea
+                rows="7"
+                value={message}
+                maxLength={MAX_FEEDBACK_LENGTH}
+                onChange={(event) => setMessage(event.target.value.slice(0, MAX_FEEDBACK_LENGTH))}
+                placeholder="Share your feedback here..."
+              />
+            </label>
+            <div className="form-footer">
+              <div>
+                <div className="character-count">{message.length} / {MAX_FEEDBACK_LENGTH} characters</div>
+                <span className="muted">Please do not include sensitive personal information.</span>
+              </div>
+              <button className="primary-button">Submit feedback</button>
+            </div>
+            {error && <p className="error-message">{error}</p>}
+          </form>
+        )}
       </section>
     </main>
   );
