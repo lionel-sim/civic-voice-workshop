@@ -34,12 +34,7 @@ export async function createApp(options = {}) {
       return res.status(403).json({ error: "Admin access required." });
     }
 
-    const searchQuery = typeof req.query.search === "string" ? req.query.search.trim().toLocaleLowerCase() : "";
-    const feedback = [...db.data.feedback]
-      .sort((first, second) => new Date(second.createdAt) - new Date(first.createdAt))
-      .filter((item) => !searchQuery || [item.name, item.message].some(
-        (value) => value.toLocaleLowerCase().includes(searchQuery),
-      ));
+    const feedback = filterFeedback(db.data.feedback, req.query);
 
     const csv = [
       CSV_COLUMNS,
@@ -62,9 +57,7 @@ export async function createApp(options = {}) {
     if (req.header("x-user-role") !== "admin") {
       return res.status(403).json({ error: "Admin access required." });
     }
-    const feedback = [...db.data.feedback].sort(
-      (first, second) => new Date(second.createdAt) - new Date(first.createdAt),
-    );
+    const feedback = filterFeedback(db.data.feedback, req.query);
     return res.json({ feedback });
   });
 
@@ -126,4 +119,19 @@ function escapeCsvValue(value) {
   const text = String(value ?? "");
   const escaped = text.replaceAll('"', '""');
   return /[",\r\n]/.test(text) ? `"${escaped}"` : escaped;
+}
+
+function filterFeedback(feedbackItems, filters = {}) {
+  const { category, status } = filters;
+  const searchQuery = typeof filters.search === "string" ? filters.search.trim().toLocaleLowerCase() : "";
+
+  return [...feedbackItems]
+    .sort((first, second) => new Date(second.createdAt) - new Date(first.createdAt))
+    .filter((item) => (
+      (!category || item.category === category)
+      && (!status || item.status === status)
+      && (!searchQuery || [item.name, item.message].some(
+        (value) => value.toLocaleLowerCase().includes(searchQuery),
+      ))
+    ));
 }

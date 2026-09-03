@@ -134,6 +134,11 @@ textarea { resize: vertical; line-height: 1.6; }
 .inbox-actions { display: flex; align-items: center; gap: 12px; }
 .inbox-actions .secondary-button { padding: 7px 10px; font-size: 13px; }
 .inbox-search { max-width: 440px; margin: 20px 0 4px; }
+.inbox-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto; align-items: end; gap: 14px; margin: 20px 0 4px; padding: 0; border: 0; }
+.inbox-filters legend { grid-column: 1 / -1; color: var(--text-secondary); font-size: 14px; font-weight: 700; }
+.inbox-filters label { flex: 1 1 180px; margin: 0; }
+.inbox-filters .secondary-button { flex: 0 0 auto; margin-bottom: 0; }
+.secondary-button:disabled { cursor: not-allowed; opacity: .55; }
 .empty-state { margin: 20px 0 0; color: var(--muted); line-height: 1.55; }
 .inbox-state { display: grid; justify-items: start; gap: 10px; padding: 30px; border: 1px solid var(--border); border-radius: 10px; text-align: left; }
 .inbox-state h2 { margin: 0; font-size: 26px; }
@@ -181,6 +186,8 @@ textarea { resize: vertical; line-height: 1.6; }
   .list-header { align-items: flex-start; flex-direction: column; gap: 4px; }
   .inbox-actions { align-items: flex-start; flex-direction: column; gap: 8px; }
   .inbox-search { max-width: none; margin-top: 16px; }
+  .inbox-filters { display: flex; align-items: stretch; flex-direction: column; gap: 12px; margin-top: 16px; }
+  .inbox-filters label, .inbox-filters .secondary-button { width: 100%; }
   .feedback-row { align-items: flex-start; flex-direction: column; gap: 12px; padding: 16px 0; }
   .feedback-row > div { min-width: 0; }
   .feedback-meta, .feedback-row p { overflow-wrap: anywhere; }

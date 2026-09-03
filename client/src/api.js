@@ -16,8 +16,13 @@ export function login(credentials) {
 export function submitFeedback(feedback) {
   return api("/api/feedback", { method: "POST", body: JSON.stringify(feedback) });
 }
-export function getFeedback(user) {
-  return api("/api/feedback", { headers: { "x-user-role": user.role } });
+export function getFeedback(user, filters = {}) {
+  const searchParams = new URLSearchParams();
+  if (filters.category) searchParams.set("category", filters.category);
+  if (filters.status) searchParams.set("status", filters.status);
+  const query = searchParams.toString();
+
+  return api(`/api/feedback${query ? `?${query}` : ""}`, { headers: { "x-user-role": user.role } });
 }
 export function updateFeedbackStatus(user, feedbackId, status) {
   return api(`/api/feedback/${feedbackId}/status`, {
@@ -30,6 +35,8 @@ export function updateFeedbackStatus(user, feedbackId, status) {
 export async function downloadFeedbackCsv(user, filters = {}) {
   const searchParams = new URLSearchParams();
   if (filters.search?.trim()) searchParams.set("search", filters.search.trim());
+  if (filters.category) searchParams.set("category", filters.category);
+  if (filters.status) searchParams.set("status", filters.status);
   const query = searchParams.toString();
   const response = await fetch(`${API_URL}/api/feedback/export.csv${query ? `?${query}` : ""}`, {
     headers: { "x-user-role": user.role },
