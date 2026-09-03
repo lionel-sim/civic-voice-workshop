@@ -52,7 +52,7 @@ Show client-side counts for total, new, in-review, and closed feedback.
 
 Done: counts reflect the currently loaded inbox and remain readable on mobile.
 
-### CV-021 — Avoid exposing NRIC-like IDs in the admin list · S
+### CV-021 [x] — Avoid exposing NRIC-like IDs in the admin list · S
 
 Mask identifiers wherever they are rendered outside the login form.
 
