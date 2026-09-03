@@ -28,7 +28,7 @@ Show a live count and enforce a 500-character maximum in the form.
 
 Done: the counter updates while typing; more than 500 characters cannot be entered or submitted.
 
-### CV-007 — Add a “submit another” success state · S
+### CV-007 [x] — Add a “submit another” success state · S
 
 Replace the form after success with a confirmation panel and a button to start another submission.
 
