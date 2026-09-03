@@ -5,6 +5,12 @@ import { maskIdentifier } from "../lib/maskIdentifier";
 export function AdminPage({ user }) {
   const [feedback, setFeedback] = useState([]);
   const [error, setError] = useState("");
+  const summary = [
+    { label: "Total", count: feedback.length },
+    { label: "New", count: feedback.filter((item) => item.status === "New").length },
+    { label: "In review", count: feedback.filter((item) => item.status === "In review").length },
+    { label: "Closed", count: feedback.filter((item) => item.status === "Closed").length },
+  ];
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -25,6 +31,14 @@ export function AdminPage({ user }) {
         <p>A simple view of feedback received from members of the public.</p>
       </div>
       {error && <p className="error-message">{error}</p>}
+      <section className="inbox-summary" aria-label="Current inbox summary">
+        {summary.map(({ label, count }) => (
+          <div className="summary-card" key={label}>
+            <span>{label}</span>
+            <strong>{count}</strong>
+          </div>
+        ))}
+      </section>
       <section className="feedback-list">
         <div className="list-header"><strong>Latest feedback</strong><span>{visibleFeedback.length} of {feedback.length} items</span></div>
         <label className="inbox-search" htmlFor="feedback-search">
