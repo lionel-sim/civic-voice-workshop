@@ -36,6 +36,9 @@ describe("CivicVoice baseline API", () => {
     expect(response.status).toBe(201);
     expect(response.body.feedback.message).toBe("Please add more benches.");
     expect(response.body.feedback.category).toBe("Estate");
+    expect(response.body.reference).toMatch(/^CV-\d{6}$/);
+    expect(response.body.feedback.reference).toBe(response.body.reference);
+    expect(response.body.reference).not.toBe(response.body.feedback.id);
 
     const inbox = await request(app).get("/api/feedback").set("x-user-role", "admin");
     expect(inbox.body.feedback[0].category).toBe("Estate");
@@ -89,6 +92,39 @@ describe("CivicVoice baseline API", () => {
     const app = await testApp();
     const response = await request(app).get("/api/feedback");
     expect(response.status).toBe(403);
+  });
+
+  it("lets an admin update a feedback status and persists the change", async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
+    const file = path.join(directory, "db.json");
+    const db = await createDb(file);
+    const app = await createApp({ db });
+
+    const response = await request(app)
+      .patch("/api/feedback/fb-seed-1/status")
+      .set("x-user-role", "admin")
+      .send({ status: "In review" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.feedback.status).toBe("In review");
+
+    const reloadedDb = await createDb(file);
+    expect(reloadedDb.data.feedback.find((item) => item.id === "fb-seed-1").status).toBe("In review");
+  });
+
+  it("rejects non-admin and invalid status updates", async () => {
+    const app = await testApp();
+
+    const forbidden = await request(app)
+      .patch("/api/feedback/fb-seed-1/status")
+      .send({ status: "Closed" });
+    expect(forbidden.status).toBe(403);
+
+    const invalid = await request(app)
+      .patch("/api/feedback/fb-seed-1/status")
+      .set("x-user-role", "admin")
+      .send({ status: "Archived" });
+    expect(invalid.status).toBe(400);
   });
 
   it("returns feedback newest first when stored data is out of order", async () => {

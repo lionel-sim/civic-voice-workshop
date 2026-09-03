@@ -4,6 +4,7 @@ import cors from "cors";
 import { createDb } from "./lib/db.js";
 
 const FEEDBACK_CATEGORIES = new Set(["Estate", "Transport", "Environment", "Other"]);
+const FEEDBACK_STATUSES = new Set(["New", "In review", "Closed"]);
 
 export async function createApp(options = {}) {
   const db = options.db ?? (await createDb());
@@ -38,6 +39,24 @@ export async function createApp(options = {}) {
     return res.json({ feedback });
   });
 
+  app.patch("/api/feedback/:id/status", async (req, res) => {
+    if (req.header("x-user-role") !== "admin") {
+      return res.status(403).json({ error: "Admin access required." });
+    }
+
+    const { status } = req.body ?? {};
+    if (!FEEDBACK_STATUSES.has(status)) {
+      return res.status(400).json({ error: "Please choose a valid feedback status." });
+    }
+
+    const feedback = db.data.feedback.find((item) => item.id === req.params.id);
+    if (!feedback) return res.status(404).json({ error: "Feedback not found." });
+
+    feedback.status = status;
+    await db.write();
+    return res.json({ feedback });
+  });
+
   app.post("/api/feedback", async (req, res) => {
     const { nric, name, message, category } = req.body ?? {};
     if (typeof message !== "string" || !message.trim()) {
@@ -47,13 +66,29 @@ export async function createApp(options = {}) {
       return res.status(400).json({ error: "Please choose a valid feedback category." });
     }
     const feedback = {
-      id: crypto.randomUUID(), nric, name, message, category, status: "New",
+      id: crypto.randomUUID(),
+      reference: createSubmissionReference(db.data.feedback),
+      nric,
+      name,
+      message,
+      category,
+      status: "New",
       createdAt: new Date().toISOString(),
     };
     db.data.feedback.unshift(feedback);
     await db.write();
-    return res.status(201).json({ feedback });
+    return res.status(201).json({ feedback, reference: feedback.reference });
   });
 
   return app;
+}
+
+function createSubmissionReference(feedbackItems) {
+  let reference;
+
+  do {
+    reference = `CV-${crypto.randomInt(100000, 1_000_000)}`;
+  } while (feedbackItems.some((item) => item.reference === reference));
+
+  return reference;
 }

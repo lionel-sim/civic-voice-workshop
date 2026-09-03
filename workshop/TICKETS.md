@@ -90,7 +90,7 @@ Let citizens choose `Estate`, `Transport`, `Environment`, or `Other`, validate i
 
 Done: the chosen category appears in the admin inbox and survives a page refresh.
 
-### CV-006 — Add a submission reference number · M
+### CV-006 [x] — Add a submission reference number · M
 
 Return a short human-readable reference from the API and show it after submission.
 
@@ -108,7 +108,7 @@ Add API query parameters and UI controls for category plus `New`, `In review`, a
 
 Done: filters work together, refresh correctly, and a clear action restores all items.
 
-### CV-012 — Let admins update status · M
+### CV-012 [x] — Let admins update status · M
 
 Add an API endpoint and UI control to move an item among `New`, `In review`, and `Closed`.
 
