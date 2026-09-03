@@ -10,7 +10,7 @@ Scoring:
 
 ## S — front-end starter tickets
 
-### CV-001 — Keep the user signed in after refresh · S
+### CV-001 [x] — Keep the user signed in after refresh · S
 
 Persist a successful session locally and restore it on page load. Signing out must clear it.
 
