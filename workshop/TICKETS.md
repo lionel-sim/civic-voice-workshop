@@ -64,7 +64,7 @@ The admin screen is blank while loading and unhelpful on failure.
 
 Done: loading, error, retry, and empty states are visibly distinct.
 
-### CV-027 — Add dark mode · S
+### CV-027 [x] — Add dark mode · S
 
 Add a theme toggle that respects the OS preference initially and persists the user's choice.
 
@@ -78,7 +78,7 @@ Done: at 375px width, list rows and controls remain usable without horizontal sc
 
 ## M — full-stack intermediate tickets
 
-### CV-004 — Prevent blank or whitespace-only feedback · M
+### CV-004 [x] — Prevent blank or whitespace-only feedback · M
 
 Fix both client and server validation so spaces and newlines are not accepted.
 

@@ -34,6 +34,11 @@ export function CitizenPage({ user }) {
       return;
     }
 
+    if (!message.trim()) {
+      setError("Please enter feedback that is not blank.");
+      return;
+    }
+
     try {
       await submitFeedback({ nric: user.nric, name: user.name, message, category });
       setSubmitted(true);

@@ -50,6 +50,18 @@ describe("CivicVoice baseline API", () => {
     expect(response.body.error).toBe("Please choose a valid feedback category.");
   });
 
+  it("rejects blank or whitespace-only feedback", async () => {
+    const app = await testApp();
+
+    for (const message of ["", "   ", "\n\t  "]) {
+      const response = await request(app).post("/api/feedback").send({
+        nric: "S0000001A", name: "Aisha Rahman", message,
+      });
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe("Please enter feedback that is not blank.");
+    }
+  });
+
   it("blocks the feedback list without the admin role header", async () => {
     const app = await testApp();
     const response = await request(app).get("/api/feedback");
