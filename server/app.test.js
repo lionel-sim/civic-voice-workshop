@@ -36,6 +36,9 @@ describe("CivicVoice baseline API", () => {
     expect(response.status).toBe(201);
     expect(response.body.feedback.message).toBe("Please add more benches.");
     expect(response.body.feedback.category).toBe("Estate");
+    expect(response.body.reference).toMatch(/^CV-\d{6}$/);
+    expect(response.body.feedback.reference).toBe(response.body.reference);
+    expect(response.body.reference).not.toBe(response.body.feedback.id);
 
     const inbox = await request(app).get("/api/feedback").set("x-user-role", "admin");
     expect(inbox.body.feedback[0].category).toBe("Estate");

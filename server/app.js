@@ -46,13 +46,29 @@ export async function createApp(options = {}) {
       return res.status(400).json({ error: "Please choose a valid feedback category." });
     }
     const feedback = {
-      id: crypto.randomUUID(), nric, name, message, category, status: "New",
+      id: crypto.randomUUID(),
+      reference: createSubmissionReference(db.data.feedback),
+      nric,
+      name,
+      message,
+      category,
+      status: "New",
       createdAt: new Date().toISOString(),
     };
     db.data.feedback.unshift(feedback);
     await db.write();
-    return res.status(201).json({ feedback });
+    return res.status(201).json({ feedback, reference: feedback.reference });
   });
 
   return app;
+}
+
+function createSubmissionReference(feedbackItems) {
+  let reference;
+
+  do {
+    reference = `CV-${crypto.randomInt(100000, 1_000_000)}`;
+  } while (feedbackItems.some((item) => item.reference === reference));
+
+  return reference;
 }

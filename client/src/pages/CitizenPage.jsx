@@ -8,6 +8,7 @@ export function CitizenPage({ user }) {
   const [message, setMessage] = useState("");
   const [category, setCategory] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [reference, setReference] = useState("");
   const [error, setError] = useState("");
   const errorRef = useRef(null);
   const successRef = useRef(null);
@@ -40,7 +41,8 @@ export function CitizenPage({ user }) {
     }
 
     try {
-      await submitFeedback({ nric: user.nric, name: user.name, message, category });
+      const response = await submitFeedback({ nric: user.nric, name: user.name, message, category });
+      setReference(response.reference);
       setSubmitted(true);
       setMessage("");
     } catch (requestError) {
@@ -52,6 +54,7 @@ export function CitizenPage({ user }) {
     setSubmitted(false);
     setMessage("");
     setCategory("");
+    setReference("");
     setError("");
   }
 
@@ -68,6 +71,7 @@ export function CitizenPage({ user }) {
             <div className="eyebrow">Feedback submitted</div>
             <h2>Thank you for sharing.</h2>
             <p>Your feedback has been received.</p>
+            <p>Your submission reference is <strong>{reference}</strong>.</p>
             <button className="primary-button" onClick={handleSubmitAnother}>Submit another response</button>
           </div>
         ) : (
