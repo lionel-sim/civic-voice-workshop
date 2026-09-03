@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { getFeedback, updateFeedbackStatus } from "../api";
+import { getFeedback, getFeedbackDetail, updateFeedbackStatus } from "../api";
 import { maskIdentifier } from "../lib/maskIdentifier";
 
 const FEEDBACK_STATUSES = ["New", "In review", "Closed"];
@@ -10,6 +10,10 @@ export function AdminPage({ user }) {
   const [updateError, setUpdateError] = useState("");
   const [updatingId, setUpdatingId] = useState("");
   const [inboxState, setInboxState] = useState("loading");
+  const [selectedFeedbackId, setSelectedFeedbackId] = useState("");
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const [detailState, setDetailState] = useState("idle");
+  const [detailError, setDetailError] = useState("");
   const summary = [
     { label: "Total", count: feedback.length },
     { label: "New", count: feedback.filter((item) => item.status === "New").length },
@@ -65,6 +69,40 @@ export function AdminPage({ user }) {
     } finally {
       setUpdatingId("");
     }
+  }
+
+  async function handleViewDetails(feedbackId) {
+    setSelectedFeedbackId(feedbackId);
+    setSelectedFeedback(null);
+    setDetailState("loading");
+    setDetailError("");
+
+    try {
+      const response = await getFeedbackDetail(user, feedbackId);
+      setSelectedFeedback(response.feedback);
+      setDetailState("ready");
+    } catch (requestError) {
+      setDetailError(requestError.message || "Unable to load feedback details.");
+      setDetailState("error");
+    }
+  }
+
+  function handleBackToInbox() {
+    setSelectedFeedbackId("");
+    setSelectedFeedback(null);
+    setDetailState("idle");
+    setDetailError("");
+  }
+
+  if (selectedFeedbackId) {
+    return (
+      <FeedbackDetail
+        feedback={selectedFeedback}
+        error={detailError}
+        state={detailState}
+        onBack={handleBackToInbox}
+      />
+    );
   }
 
   return (
@@ -153,17 +191,22 @@ export function AdminPage({ user }) {
                   </div>
                   <p>{item.message}</p>
                 </div>
-                <label className="feedback-status-control">
-                  <span>Status</span>
-                  <select
-                    aria-label={`Status for feedback from ${item.name}`}
-                    disabled={updatingId === item.id}
-                    onChange={(event) => handleStatusChange(item.id, event.target.value)}
-                    value={item.status}
-                  >
-                    {FEEDBACK_STATUSES.map((status) => <option key={status}>{status}</option>)}
-                  </select>
-                </label>
+                <div className="feedback-row-actions">
+                  <button className="text-button feedback-detail-button" type="button" onClick={() => handleViewDetails(item.id)}>
+                    View details
+                  </button>
+                  <label className="feedback-status-control">
+                    <span>Status</span>
+                    <select
+                      aria-label={`Status for feedback from ${item.name}`}
+                      disabled={updatingId === item.id}
+                      onChange={(event) => handleStatusChange(item.id, event.target.value)}
+                      value={item.status}
+                    >
+                      {FEEDBACK_STATUSES.map((status) => <option key={status}>{status}</option>)}
+                    </select>
+                  </label>
+                </div>
               </article>
             ))}
             {visibleFeedback.length === 0 && (
@@ -177,4 +220,63 @@ export function AdminPage({ user }) {
       </section>
     </main>
   );
+}
+
+function FeedbackDetail({ feedback, error, state, onBack }) {
+  return (
+    <main className="page-shell admin-shell">
+      <button className="text-button back-to-inbox" type="button" onClick={onBack}>← Back to inbox</button>
+      <div className="page-heading">
+        <div className="eyebrow">Admin workspace</div>
+        <h1>Feedback details</h1>
+        <p>Review the full submission without losing your inbox search or filters.</p>
+      </div>
+      {state === "loading" && (
+        <section className="inbox-state inbox-state-loading" role="status">
+          <h2>Loading feedback details</h2>
+          <p>Getting the complete submission.</p>
+        </section>
+      )}
+      {state === "error" && (
+        <section className="inbox-state inbox-state-error" role="alert">
+          <h2>We couldn’t load this feedback</h2>
+          <p>{error}</p>
+          <button className="secondary-button" type="button" onClick={onBack}>Back to inbox</button>
+        </section>
+      )}
+      {state === "ready" && feedback && (
+        <section className="feedback-detail" aria-label="Feedback details">
+          <dl className="feedback-detail-fields">
+            <DetailField label="Reference number" value={feedback.reference || "Not available"} />
+            <DetailField label="Feedback ID" value={feedback.id} />
+            <DetailField label="Name" value={feedback.name} />
+            <DetailField label="Identifier" value={maskIdentifier(feedback.nric)} />
+            <DetailField label="Category" value={feedback.category} />
+            <DetailField label="Status" value={feedback.status} />
+            <DetailField label="Received" value={formatDateTime(feedback.createdAt)} />
+          </dl>
+          <div className="feedback-detail-message">
+            <h2>Feedback</h2>
+            <p>{feedback.message}</p>
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
+
+function DetailField({ label, value }) {
+  return (
+    <div>
+      <dt>{label}</dt>
+      <dd>{value || "Not available"}</dd>
+    </div>
+  );
+}
+
+function formatDateTime(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Not available";
+
+  return date.toLocaleString();
 }

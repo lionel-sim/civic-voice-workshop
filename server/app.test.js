@@ -94,6 +94,37 @@ describe("CivicVoice baseline API", () => {
     expect(response.status).toBe(403);
   });
 
+  it("returns one feedback item with all stored fields for an admin", async () => {
+    const app = await testApp();
+
+    const response = await request(app)
+      .get("/api/feedback/fb-seed-1")
+      .set("x-user-role", "admin");
+
+    expect(response.status).toBe(200);
+    expect(response.body.feedback).toMatchObject({
+      id: "fb-seed-1",
+      nric: "S0000001A",
+      name: "Aisha Rahman",
+      message: expect.any(String),
+      category: "General",
+      status: "New",
+      createdAt: "2026-08-29T09:14:00.000Z",
+    });
+  });
+
+  it("blocks non-admin detail access and reports missing feedback", async () => {
+    const app = await testApp();
+
+    const forbidden = await request(app).get("/api/feedback/fb-seed-1");
+    expect(forbidden.status).toBe(403);
+
+    const missing = await request(app)
+      .get("/api/feedback/not-found")
+      .set("x-user-role", "admin");
+    expect(missing.status).toBe(404);
+  });
+
   it("lets an admin update a feedback status and persists the change", async () => {
     const directory = await mkdtemp(path.join(os.tmpdir(), "civic-voice-"));
     const file = path.join(directory, "db.json");

@@ -114,7 +114,7 @@ Add an API endpoint and UI control to move an item among `New`, `In review`, and
 
 Done: status persists in `data/db.json` and remains updated after refresh.
 
-### CV-014 — Add feedback detail view · M
+### CV-014 [x] — Add feedback detail view · M
 
 Add an API route and focused UI detail view with all stored fields and a back action.
 

@@ -150,9 +150,20 @@ textarea { resize: vertical; line-height: 1.6; }
 .feedback-row:last-child { border-bottom: 0; padding-bottom: 0; }
 .feedback-row p { margin: 8px 0 0; line-height: 1.55; }
 .feedback-meta { color: var(--muted); font-size: 13px; }
+.feedback-row-actions { display: flex; align-items: flex-end; gap: 16px; }
+.feedback-detail-button { padding: 7px 0; white-space: nowrap; }
 .status-pill { align-self: flex-start; white-space: nowrap; background: var(--status-background); color: var(--status-text); border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 700; }
 .feedback-status-control { align-self: flex-start; display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 700; }
 .feedback-status-control select { min-width: 120px; margin: 0; padding: 7px 28px 7px 9px; font-size: 13px; }
+.back-to-inbox { margin-bottom: 24px; padding: 0; }
+.feedback-detail { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; box-shadow: 0 8px 30px var(--shadow); }
+.feedback-detail-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; margin: 0; }
+.feedback-detail-fields > div { min-width: 0; }
+.feedback-detail-fields dt { color: var(--muted); font-size: 13px; font-weight: 700; }
+.feedback-detail-fields dd { margin: 6px 0 0; overflow-wrap: anywhere; color: var(--text); font-size: 16px; }
+.feedback-detail-message { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border-soft); }
+.feedback-detail-message h2 { margin: 0 0 10px; font-size: 28px; }
+.feedback-detail-message p { margin: 0; overflow-wrap: anywhere; line-height: 1.65; white-space: pre-wrap; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 760px) {
   .split-layout { grid-template-columns: 1fr; }
@@ -187,6 +198,9 @@ textarea { resize: vertical; line-height: 1.6; }
   .inbox-filters label, .inbox-filters .secondary-button { width: 100%; }
   .feedback-row { align-items: flex-start; flex-direction: column; gap: 12px; padding: 16px 0; }
   .feedback-row > div { min-width: 0; }
+  .feedback-row-actions { align-items: flex-start; gap: 18px; }
+  .feedback-detail { padding: 20px 16px; }
+  .feedback-detail-fields { grid-template-columns: 1fr; gap: 16px; }
   .feedback-meta, .feedback-row p { overflow-wrap: anywhere; }
   .status-pill { align-self: flex-start; }
 }

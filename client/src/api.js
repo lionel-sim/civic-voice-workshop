@@ -24,6 +24,9 @@ export function getFeedback(user, filters = {}) {
 
   return api(`/api/feedback${query ? `?${query}` : ""}`, { headers: { "x-user-role": user.role } });
 }
+export function getFeedbackDetail(user, feedbackId) {
+  return api(`/api/feedback/${feedbackId}`, { headers: { "x-user-role": user.role } });
+}
 export function updateFeedbackStatus(user, feedbackId, status) {
   return api(`/api/feedback/${feedbackId}/status`, {
     method: "PATCH",

@@ -39,6 +39,17 @@ export async function createApp(options = {}) {
     return res.json({ feedback });
   });
 
+  app.get("/api/feedback/:id", (req, res) => {
+    if (req.header("x-user-role") !== "admin") {
+      return res.status(403).json({ error: "Admin access required." });
+    }
+
+    const feedback = db.data.feedback.find((item) => item.id === req.params.id);
+    if (!feedback) return res.status(404).json({ error: "Feedback not found." });
+
+    return res.json({ feedback });
+  });
+
   app.patch("/api/feedback/:id/status", async (req, res) => {
     if (req.header("x-user-role") !== "admin") {
       return res.status(403).json({ error: "Admin access required." });
