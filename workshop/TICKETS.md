@@ -22,7 +22,7 @@ Reject empty or malformed workshop IDs in the browser before making the login re
 
 Done: an inline message appears for malformed input and no network request is sent.
 
-### CV-003 — Add feedback character count and limit · S
+### CV-003 [x] — Add feedback character count and limit · S
 
 Show a live count and enforce a 500-character maximum in the form.
 
