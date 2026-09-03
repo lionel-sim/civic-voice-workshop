@@ -86,7 +86,7 @@ export function AdminPage({ user }) {
               <article className="feedback-row" key={item.id}>
                 <div>
                   <div className="feedback-meta">
-                    {item.name} · {maskIdentifier(item.nric)} · {new Date(item.createdAt).toLocaleDateString()}
+                    {item.name} · {maskIdentifier(item.nric)} · {item.category} · {new Date(item.createdAt).toLocaleDateString()}
                   </div>
                   <p>{item.message}</p>
                 </div>

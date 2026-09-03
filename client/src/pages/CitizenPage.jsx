@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { submitFeedback } from "../api";
 
 const MAX_FEEDBACK_LENGTH = 500;
+const FEEDBACK_CATEGORIES = ["Estate", "Transport", "Environment", "Other"];
 
 export function CitizenPage({ user }) {
   const [message, setMessage] = useState("");
+  const [category, setCategory] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const errorRef = useRef(null);
@@ -22,13 +24,18 @@ export function CitizenPage({ user }) {
     event.preventDefault();
     setError("");
 
+    if (!FEEDBACK_CATEGORIES.includes(category)) {
+      setError("Please choose a feedback category.");
+      return;
+    }
+
     if (message.length > MAX_FEEDBACK_LENGTH) {
       setError(`Feedback must be ${MAX_FEEDBACK_LENGTH} characters or fewer.`);
       return;
     }
 
     try {
-      await submitFeedback({ nric: user.nric, name: user.name, message });
+      await submitFeedback({ nric: user.nric, name: user.name, message, category });
       setSubmitted(true);
       setMessage("");
     } catch (requestError) {
@@ -39,6 +46,7 @@ export function CitizenPage({ user }) {
   function handleSubmitAnother() {
     setSubmitted(false);
     setMessage("");
+    setCategory("");
     setError("");
   }
 
@@ -59,6 +67,20 @@ export function CitizenPage({ user }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
+            <label htmlFor="feedback-category">Feedback category</label>
+            <select
+              id="feedback-category"
+              value={category}
+              onChange={(event) => {
+                setCategory(event.target.value);
+                setError("");
+              }}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? "feedback-error" : undefined}
+            >
+              <option value="">Choose a category</option>
+              {FEEDBACK_CATEGORIES.map((option) => <option key={option}>{option}</option>)}
+            </select>
             <label htmlFor="feedback-message">Your feedback</label>
             <p id="feedback-guidance" className="field-guidance">
               Please do not include sensitive personal information.

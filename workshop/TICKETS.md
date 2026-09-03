@@ -84,7 +84,7 @@ Fix both client and server validation so spaces and newlines are not accepted.
 
 Done: the browser blocks blank text, the API rejects bypass attempts, and useful text still submits.
 
-### CV-005 — Add feedback categories · M
+### CV-005 [x] — Add feedback categories · M
 
 Let citizens choose `Estate`, `Transport`, `Environment`, or `Other`, validate it server-side, and store it.
 
